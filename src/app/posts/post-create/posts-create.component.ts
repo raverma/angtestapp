@@ -19,8 +19,10 @@ export class PostCreateComponent {
             return;
         }
 
-        const post: Post = { title: form.value.title, content: form.value.content};
+        const post: Post = {id: null, title: form.value.title, content: form.value.content};
         //this.postCreated.emit(post);
         this.postsService.addPost(post);
+
+        form.resetForm();
     }
 }
