@@ -38,17 +38,20 @@ app.post('/api/posts', (req, res, next)=> {
 });
 
 app.get('/api/posts',(req, res, next )=> {
-    const posts= [];
+ 
     Post.find()
     .then((documents)=>{
-
+        var posts = [];
+        documents.forEach((post)=> {
+            posts.push({id: post._id, title: post.title, content: post.content});
+        });
         res.status(200).json({
             message: "Posts fetched successfully",
             posts: documents
         });
     })
     .catch((err) => {
-        console.log("Error in fetching posts");
+        console.log(err);
         return;
     });
 
