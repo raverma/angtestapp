@@ -9,8 +9,9 @@ mongoose.connect("mongodb+srv://postsadmin:postsadminpwd@cluster0-zqzck.mongodb.
 .then(()=> {
     console.log('Database connected successfully');
 })
-.catch(()=>{
+.catch((err)=>{
     console.log("Connection failed......exiting !!!");
+    console.log(err);
     return;
 });
 
@@ -29,22 +30,20 @@ app.post('/api/posts', (req, res, next)=> {
         title: req.body.title,
         content: req.body.content
     });
-    post.save();
-    console.log(post);
-
-    res.status(201).json(
-        {message: "Your post has been added"}
-    );
+    post.save().then((result)=>{
+        res.status(201).json(
+            {message: "Your post has been added", postId:result._id}
+    )});
 });
 
 app.get('/api/posts',(req, res, next )=> {
  
     Post.find()
     .then((documents)=>{
-        var posts = [];
-        documents.forEach((post)=> {
-            posts.push({id: post._id, title: post.title, content: post.content});
-        });
+      // var posts = [];
+      // documents.forEach((post)=> {
+      //      posts.push({id: post._id, title: post.title, content: post.content});
+      // });
         res.status(200).json({
             message: "Posts fetched successfully",
             posts: documents
@@ -56,6 +55,15 @@ app.get('/api/posts',(req, res, next )=> {
     });
 
  
+});
+
+app.delete('/api/posts/:id', (req, res, next)=> {
+    console.log(req.params.id);
+    Post.deleteOne({_id: req.params.id}).then( result=>{
+        console.log(result);
+        res.status(200).json({message: "Post Deleted"});
+    });
+    
 });
 
 app.use('/',(req, res)=> {
