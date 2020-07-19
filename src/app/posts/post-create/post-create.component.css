@@ -12,3 +12,12 @@ textarea {
 input[type='file']{
     visibility: hidden;
 }
+
+image-preview {
+    height: 100 px;
+    margin: 1rem 0;
+}
+
+image-preview img{
+    max-height: 100%;
+}
