@@ -1,11 +1,19 @@
 const express = require('express');
-
+const multer = require('multer');
 const Post = require('../models/post');
 
 const router = express.Router();
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "backend/images");
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname.toLowerCase().replace(' ','-')) ;
+    }
+});
 
 
-router.post('/api/posts', (req, res, next)=> {
+router.post('/api/posts', multer({storage}).single('image') , (req, res, next)=> {
     const post = new Post({
         title: req.body.title,
         content: req.body.content

@@ -15,6 +15,7 @@ export class PostCreateComponent implements OnInit {
     private mode = 'create';    //initialize with create mode as this same component is used for edit mode also
     private postId: string;
     private post: Post;
+    private selectedFile: File = null;
     imagePreview: string;
     form: FormGroup;
     constructor(public postsService: PostsService, public route: ActivatedRoute ){}
@@ -56,22 +57,22 @@ export class PostCreateComponent implements OnInit {
             this.postsService.updatePost(post);
         }
         else{
-            this.postsService.addPost(post);
+            this.postsService.addPost(post, this.selectedFile);
             this.form.reset();
         }
         this.isLoading = false;
     }
 
     onFilePicked(event: Event) {
-        const file = (event.target as HTMLInputElement).files[0];
-        this.form.patchValue({image: file});
+        this.selectedFile = (event.target as HTMLInputElement).files[0];
+        this.form.patchValue({image: this.selectedFile});
         this.form.get('image').updateValueAndValidity();
         const reader = new FileReader();
         reader.onload = () => {
             console.log(reader.result);
             this.imagePreview = reader.result as string;
         };
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(this.selectedFile);
      
     }
 }
