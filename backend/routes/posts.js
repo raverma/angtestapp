@@ -46,11 +46,18 @@ router.delete('/api/posts/:id', (req, res, next)=> {
 
 router.put('/api/posts/:id', multer({storage}).single('image'),  (req, res, next)=> {
     const url = req.protocol + "://" + req.get("host");
+    var imageUrl = null;
+    if (req.file === undefined) {
+        imageUrl = req.body.imagePath;
+    }
+    else{
+        imageUrl =  url + "/images/" + req.file.filename ;
+    }
     const post = new Post({
         _id: req.body.id,
         title: req.body.title,
         content: req.body.content,
-        imagePath: url + "/images/" + req.file.filename 
+        imagePath: imageUrl
     });
     console.log(post);
     Post.updateOne({_id: req.params.id}, post).then( result => {

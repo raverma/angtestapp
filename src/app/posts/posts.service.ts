@@ -70,19 +70,20 @@ export class PostsService{
 
     updatePost(post: Post, imageFile: File){
         //console.log(post);
+        console.log("Type of image file is " + typeof(imageFile));
         let postData: Post | FormData;
-        if (typeof(imageFile)=== 'object'){
+        if (imageFile === null){
+            postData =  {   id: post.id,
+                title: post.title,
+                content: post.content,
+                imagePath: post.imagePath
+            }
+        } else if (typeof(imageFile)=== 'object'){
             postData = new FormData();
             postData.append("id", post.id);
             postData.append("title", post.title);
             postData.append("content", post.content);
             postData.append("image", imageFile, imageFile.name)
-        } else {
-            postData =  {   id: post.id,
-                            title: post.title,
-                            content: post.content,
-                            imagePath: imageFile
-                        }
         }
 
         this.http.put("http://localhost:3000/api/posts/" + post.id, postData)
