@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 
 const bodyParser = require('body-parser');
@@ -6,7 +7,7 @@ const Post = require('./models/post');
 const mongoose = require('mongoose');
 
 const postsRoutes =  require('./routes/posts');
-const app = express(postsRoutes);
+const app = express();
 
 mongoose.connect("mongodb+srv://postsadmin:postsadminpwd@cluster0-zqzck.mongodb.net/MyPosts?retryWrites=true&w=majority",{useNewUrlParser: true, useUnifiedTopology: true})
 .then(()=> {
@@ -19,6 +20,8 @@ mongoose.connect("mongodb+srv://postsadmin:postsadminpwd@cluster0-zqzck.mongodb.
 });
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+app.use("/images", express.static(path.join("backend","images")));
 //app.use(bodyParser.urlencoded({extended: false}));
 
 app.use((req, res, next)=> {

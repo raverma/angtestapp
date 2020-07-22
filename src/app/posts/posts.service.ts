@@ -21,9 +21,10 @@ export class PostsService{
         .pipe(map((postData)=> {
             return postData.posts.map(post => {
                 return {title: post.title,
-                content: post.content,
-                id: post._id
-                };
+                        content: post.content,
+                        id: post._id,
+                        imagePath: post.imagePath
+                    };
             });
         }))
         .subscribe((mappedPosts)=>{
@@ -38,19 +39,20 @@ export class PostsService{
 
     getPost(postId: string){
         //return {...this.posts.find(p => p.id === postId)};
-        return this.http.get<{_id: string, title: string, content: string}>("http://localhost:3000/api/posts/" + postId);
+        return this.http.get<{_id: string, title: string, content: string, imagePath: string}>("http://localhost:3000/api/posts/" + postId);
     }
 
     addPost(post: Post, imageFile: File) {
         const postData = new FormData();
-        postData.append('id', post.id);
+        //postData.append('id', post.id);
         postData.append('title', post.title);
         postData.append('content', post.content);
         postData.append('image', imageFile, imageFile.name);
-        this.http.post<{message: string, postId: string}>("http://localhost:3000/api/posts", postData)
+        this.http.post<{message: string, post: Post}>("http://localhost:3000/api/posts", postData)
                 .subscribe(responseData=> {
-                    post.id = responseData.postId;
-                    console.log(responseData.message);
+                    //post.id = responseData.post.id;
+                    //post.imagePath = responseData.post.imagePath;
+                    
                     this.posts.push(post);
                     this.postsUpdated.next([...this.posts]);
                     this.router.navigate(["/"]);
@@ -66,9 +68,24 @@ export class PostsService{
         });
     }
 
-    updatePost(post: Post){
+    updatePost(post: Post, imageFile: File){
         //console.log(post);
-        this.http.put("http://localhost:3000/api/posts/" + post.id, post)
+        let postData: Post | FormData;
+        if (typeof(imageFile)=== 'object'){
+            postData = new FormData();
+            postData.append("id", post.id);
+            postData.append("title", post.title);
+            postData.append("content", post.content);
+            postData.append("image", imageFile, imageFile.name)
+        } else {
+            postData =  {   id: post.id,
+                            title: post.title,
+                            content: post.content,
+                            imagePath: imageFile
+                        }
+        }
+
+        this.http.put("http://localhost:3000/api/posts/" + post.id, postData)
             .subscribe((responseData)=> {
                 console.log(responseData);
                 this.router.navigate(["/"]);

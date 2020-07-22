@@ -33,8 +33,9 @@ export class PostCreateComponent implements OnInit {
                 this.isLoading=true;
                 this.postsService.getPost(this.postId).subscribe(postData => {
                     this.isLoading = false;
-                    this.post = {id: postData._id, title: postData.title,content: postData.content};
-                    this.form.setValue({title: this.post.title, content: this.post.content});
+                    this.post = {id: postData._id, title: postData.title,content: postData.content, imagePath: postData.imagePath};
+                    this.form.setValue({title: this.post.title, content: this.post.content, image:this.post.imagePath });
+                    this.imagePreview = postData.imagePath;
                 });
                 
             }
@@ -50,11 +51,11 @@ export class PostCreateComponent implements OnInit {
             return;
         }
 
-        const post: Post = {id: this.postId, title: this.form.value.title, content: this.form.value.content};
+        const post: Post = {id: this.postId, title: this.form.value.title, content: this.form.value.content, imagePath: this.form.value.imagePath};
         //this.postCreated.emit(post);
         this.isLoading = true;
         if (this.mode === "edit" ){
-            this.postsService.updatePost(post);
+            this.postsService.updatePost(post, this.selectedFile);
         }
         else{
             this.postsService.addPost(post, this.selectedFile);
@@ -69,7 +70,6 @@ export class PostCreateComponent implements OnInit {
         this.form.get('image').updateValueAndValidity();
         const reader = new FileReader();
         reader.onload = () => {
-            console.log(reader.result);
             this.imagePreview = reader.result as string;
         };
         reader.readAsDataURL(this.selectedFile);

@@ -14,13 +14,22 @@ const storage = multer.diskStorage({
 
 
 router.post('/api/posts', multer({storage}).single('image') , (req, res, next)=> {
+    const url = req.protocol + "://" + req.get("host");
     const post = new Post({
         title: req.body.title,
-        content: req.body.content
+        content: req.body.content,
+        imagePath: url + "/images/" + req.file.filename 
     });
     post.save().then((result)=>{
         res.status(201).json(
-            {message: "Your post has been added", postId:result._id}
+            {   message: "Your post has been added", 
+                post: {
+                    id: result._id,
+                    title: result.post,
+                    content: result.content,
+                    imagePath: result.imagePath
+                }
+            }
     )});
 });
 
@@ -35,11 +44,13 @@ router.delete('/api/posts/:id', (req, res, next)=> {
     
 });
 
-router.put('/api/posts/:id', (req, res, next)=> {
+router.put('/api/posts/:id', multer({storage}).single('image'),  (req, res, next)=> {
+    const url = req.protocol + "://" + req.get("host");
     const post = new Post({
         _id: req.body.id,
         title: req.body.title,
-        content: req.body.content
+        content: req.body.content,
+        imagePath: url + "/images/" + req.file.filename 
     });
     console.log(post);
     Post.updateOne({_id: req.params.id}, post).then( result => {
@@ -75,7 +86,7 @@ router.get('/api/posts/:id', (req, res, next)=> {
     
     Post.findById(postId).then(post=>{
         if (post){
-            res.status(200).json({id: post._id, title: post.title, content: post.content}); 
+            res.status(200).json({id: post._id, title: post.title, content: post.content,imagePath: post.imagePath}); 
         }
         else {
             res.status(404).json({message: "Post not found"});
