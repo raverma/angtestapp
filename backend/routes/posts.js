@@ -36,9 +36,7 @@ router.post('/api/posts', multer({storage}).single('image') , (req, res, next)=>
 
 
 router.delete('/api/posts/:id', (req, res, next)=> {
-    console.log(req.params.id);
     Post.deleteOne({_id: req.params.id}).then( result=>{
-        console.log(result);
         res.status(200).json({message: "Post Deleted"});
     });
     
@@ -61,22 +59,35 @@ router.put('/api/posts/:id', multer({storage}).single('image'),  (req, res, next
     });
     console.log(post);
     Post.updateOne({_id: req.params.id}, post).then( result => {
-        console.log(result);
+        //console.log(result);
         res.status(200).json({message: 'Post updated successfully'});
     });
 });
 
 router.get('/api/posts',(req, res, next )=> {
- 
-    Post.find()
+    const pageSize = +req.query.pageSize;
+    const currentPage = +req.query.page;
+    const postQuery = Post.find();
+    let fetchedDocuments;
+    if (pageSize && currentPage) {
+        postQuery
+            .skip(pageSize * (currentPage - 1) )
+            .limit(pageSize);
+    }
+    postQuery
     .then((documents)=>{
       // var posts = [];
       // documents.forEach((post)=> {
       //      posts.push({id: post._id, title: post.title, content: post.content});
       // });
+        fetchedDocuments = documents;
+        return Post.count();
+    })
+    .then(count => {
         res.status(200).json({
             message: "Posts fetched successfully",
-            posts: documents
+            posts: fetchedDocuments,
+            maxPosts: count
         });
     })
     .catch((err) => {

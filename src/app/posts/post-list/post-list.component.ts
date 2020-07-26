@@ -3,6 +3,7 @@ import { listLazyRoutes } from '@angular/compiler/src/aot/lazy_routes';
 import { Post } from '../post.model';
 import { PostsService } from '../posts.service';
 import { Subscription}  from 'rxjs';
+import { PageEvent } from '@angular/material';
 @Component({
     selector: 'app-post-list',
     templateUrl: './post-list.component.html',
@@ -17,6 +18,10 @@ export class PostListComponent implements OnInit, OnDestroy{
 posts: Post[] = [];
 postsSub: Subscription;
 isLoading = false;
+totalItems = 0;     //to hold total posts count overall
+itemsPerPage = 2;
+currentPage = 1;
+pageSizeOptions = [1,2,5,10];
 //postsServ : PostsService;   //not required if public is used before the constructor parameter
 constructor(public postsService: PostsService){
    
@@ -24,21 +29,38 @@ constructor(public postsService: PostsService){
 
 ngOnInit(){
     this.isLoading = true
-    this.postsService.getPosts();
-
-    this.postsSub = this.postsService.getPostUpdatedListener().subscribe((posts: Post[])=> {
-        this.posts = posts;
+    
+    this.postsService.getPosts(this.itemsPerPage, this.currentPage);
+    
+    this.postsSub = this.postsService.getPostUpdatedListener().subscribe((postData: {posts: Post[], postCount: number})=> {
+        this.posts = postData.posts;
+        this.totalItems = postData.postCount;
         this.isLoading = false;
     });
 }
 
 onDelete(postId: string)
 {
-    this.postsService.deletePost(postId);
+    this.isLoading = true;
+    this.postsService.deletePost(postId).subscribe(()=> {
+        if (this.posts.length==1){
+            this.currentPage = this.currentPage -1;
+        }
+        this.postsService.getPosts(this.itemsPerPage, this.currentPage);
+    });
+}
+
+
+onChangedPage(pageEventData: PageEvent){
+    this.isLoading = true;
+    this.currentPage = pageEventData.pageIndex +1 ;
+    this.itemsPerPage = pageEventData.pageSize;
+    this.postsService.getPosts(this.itemsPerPage, this.currentPage);
 }
 
 ngOnDestroy() {
     this.postsSub.unsubscribe();
 }
+
 
 }
