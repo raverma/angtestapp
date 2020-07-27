@@ -43,9 +43,9 @@ onDelete(postId: string)
 {
     this.isLoading = true;
     this.postsService.deletePost(postId).subscribe(()=> {
-        if (this.posts.length==1){
+       /* if (this.posts.length==1){
             this.currentPage = this.currentPage -1;
-        }
+        } */
         this.postsService.getPosts(this.itemsPerPage, this.currentPage);
     });
 }
