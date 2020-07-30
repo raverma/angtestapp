@@ -11,6 +11,7 @@ const userRoutes = require("./routes/user");
 
 const app = express();
 
+mongoose.set('useCreateIndex', true);
 mongoose.connect("mongodb+srv://postsadmin:postsadminpwd@cluster0-zqzck.mongodb.net/MyPosts?retryWrites=true&w=majority",{useNewUrlParser: true, useUnifiedTopology: true})
 .then(()=> {
     console.log('Database connected successfully');
