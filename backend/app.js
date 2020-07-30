@@ -3,10 +3,12 @@ const express = require('express');
 
 const bodyParser = require('body-parser');
 const { createModuleResolutionCache } = require('typescript');
-const Post = require('./models/post');
+
 const mongoose = require('mongoose');
 
 const postsRoutes =  require('./routes/posts');
+const userRoutes = require("./routes/user");
+
 const app = express();
 
 mongoose.connect("mongodb+srv://postsadmin:postsadminpwd@cluster0-zqzck.mongodb.net/MyPosts?retryWrites=true&w=majority",{useNewUrlParser: true, useUnifiedTopology: true})
@@ -33,5 +35,6 @@ app.use((req, res, next)=> {
 
 
 app.use(postsRoutes);
+app.use(userRoutes);
 
 module.exports = app;

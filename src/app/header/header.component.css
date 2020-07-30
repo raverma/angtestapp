@@ -5,4 +5,5 @@ a {
 
 ul {
     list-style: none;
+    display: flex;
 }
