@@ -6,11 +6,14 @@ import { HttpClient } from '@angular/common/http';
 @Injectable({ providedIn: "root"})
 export class AuthService {
     private token: string = '';
+    private isAuthenticated = false;
     private authStatusListener = new Subject<Boolean>();
     constructor(private http: HttpClient){
 
     }
-
+    getIsAuth() {
+        return this.isAuthenticated;
+    }
     getAuthStatusListener(){
         return this.authStatusListener.asObservable();
     }
@@ -27,9 +30,13 @@ export class AuthService {
         this.http.post<{message: string, token: string}>("http://localhost:3000/api/user/login", {email, password})
             .subscribe(response => {
                 this.token = response.token;
-                this.authStatusListener.next(true);
+                if (this.token){
+                    this.isAuthenticated = true;
+                    this.authStatusListener.next(true);
+                }
+
                 
-            })
+            });
 
     }
 

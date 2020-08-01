@@ -1,3 +1,4 @@
+import { AuthService } from './../../auth/auth.service';
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { listLazyRoutes } from '@angular/compiler/src/aot/lazy_routes';
 import { Post } from '../post.model';
@@ -18,18 +19,20 @@ export class PostListComponent implements OnInit, OnDestroy{
 posts: Post[] = [];
 postsSub: Subscription;
 isLoading = false;
+userIsAuthenticated: Boolean = false;
+private authListenerSubs: Subscription;
 totalItems = 0;     //to hold total posts count overall
 itemsPerPage = 2;
 currentPage = 1;
 pageSizeOptions = [1,2,5,10];
 //postsServ : PostsService;   //not required if public is used before the constructor parameter
-constructor(public postsService: PostsService){
+constructor(public postsService: PostsService, private authService: AuthService){
    
 }
 
 ngOnInit(){
     this.isLoading = true
-    
+
     this.postsService.getPosts(this.itemsPerPage, this.currentPage);
     
     this.postsSub = this.postsService.getPostUpdatedListener().subscribe((postData: {posts: Post[], postCount: number})=> {
@@ -37,6 +40,10 @@ ngOnInit(){
         this.totalItems = postData.postCount;
         this.isLoading = false;
     });
+    this.userIsAuthenticated = this.authService.getIsAuth();
+    this.authListenerSubs = this.authService.getAuthStatusListener().subscribe((isAuthenticated)=>{
+        this.userIsAuthenticated = isAuthenticated;
+    }); 
 }
 
 onDelete(postId: string)
@@ -60,6 +67,7 @@ onChangedPage(pageEventData: PageEvent){
 
 ngOnDestroy() {
     this.postsSub.unsubscribe();
+    this.authListenerSubs.unsubscribe();
 }
 
 
