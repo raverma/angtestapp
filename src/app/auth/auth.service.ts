@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 
 @Injectable({ providedIn: "root"})
 export class AuthService {
-    
+    private token: string = '';
 
     constructor(private http: HttpClient){
 
@@ -19,10 +19,16 @@ export class AuthService {
     }
 
     loginUser(email: string, password: string){
-        this.http.post("http://localhost:3000/api/user/login", {email, password})
+        this.http.post<{message: string, token: string}>("http://localhost:3000/api/user/login", {email, password})
             .subscribe(response => {
+                this.token = response.token;
                 console.log(response);
+                
             })
 
+    }
+
+    getToken(){
+        return this.token;
     }
 }

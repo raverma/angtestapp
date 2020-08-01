@@ -4,13 +4,13 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
+
 const router = express.Router();
 
 
 router.post("/api/user/signup", (req, res, next)=> {
     bcrypt.genSalt(10, (err, salt)=>{
         bcrypt.hash(req.body.password, salt, (err, hash)=>{
-            console.log(req.body);
             const user = new User ({
                 firstname: req.body.firstName,
                 lastname: req.body.lastName,
@@ -65,9 +65,8 @@ router.post("/api/user/login", (req, res, next)=> {
             } 
         )
         .catch(err => {
-            console.log(err);
             res.status(401).json({
-                message: "Some unexpected error" 
+                message: err 
             });
         });
 });
