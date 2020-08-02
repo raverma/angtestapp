@@ -60,7 +60,8 @@ router.post("/api/user/login", (req, res, next)=> {
                 );
                 res.status(200).json({
                     message: "User Authenticated",
-                    token: token
+                    token: token,
+                    expires: 3600
                 });
             } 
         )
