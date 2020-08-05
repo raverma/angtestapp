@@ -19,8 +19,10 @@ router.post('/api/posts', checkAuth,  multer({storage}).single('image') , (req, 
     const post = new Post({
         title: req.body.title,
         content: req.body.content,
-        imagePath: url + "/images/" + req.file.filename 
+        imagePath: url + "/images/" + req.file.filename ,
+        creator: req.userData.userId   
     });
+
     post.save().then((result)=>{
         res.status(201).json(
             {   message: "Your post has been added", 
@@ -56,7 +58,8 @@ router.put('/api/posts/:id',checkAuth,  multer({storage}).single('image'),  (req
         _id: req.body.id,
         title: req.body.title,
         content: req.body.content,
-        imagePath: imageUrl
+        imagePath: imageUrl,
+        creator: req.userData.userId
     });
     console.log(post);
     Post.updateOne({_id: req.params.id}, post).then( result => {
