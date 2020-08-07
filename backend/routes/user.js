@@ -61,6 +61,7 @@ router.post("/api/user/login", (req, res, next)=> {
                 res.status(200).json({
                     message: "User Authenticated",
                     token: token,
+                    userId: fetchedUser._id,
                     expires: 3600
                 });
             } 

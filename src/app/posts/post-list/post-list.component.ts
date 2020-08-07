@@ -20,6 +20,7 @@ posts: Post[] = [];
 postsSub: Subscription;
 isLoading = false;
 userIsAuthenticated: Boolean = false;
+loggedInUserId: string;
 private authListenerSubs: Subscription;
 totalItems = 0;     //to hold total posts count overall
 itemsPerPage = 2;
@@ -41,8 +42,10 @@ ngOnInit(){
         this.isLoading = false;
     });
     this.userIsAuthenticated = this.authService.getIsAuth();
+    this.loggedInUserId = this.authService.getUserId();
     this.authListenerSubs = this.authService.getAuthStatusListener().subscribe((isAuthenticated)=>{
         this.userIsAuthenticated = isAuthenticated;
+        this.loggedInUserId = this.authService.getUserId();
     }); 
 }
 

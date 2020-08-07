@@ -47,7 +47,7 @@ export class PostsService{
 
     getPost(postId: string){
         //return {...this.posts.find(p => p.id === postId)};
-        return this.http.get<{_id: string, title: string, content: string, imagePath: string}>("http://localhost:3000/api/posts/" + postId);
+        return this.http.get<{_id: string, title: string, content: string, imagePath: string, creator: string}>("http://localhost:3000/api/posts/" + postId);
     }
 
     addPost(post: Post, imageFile: File) {
@@ -77,7 +77,8 @@ export class PostsService{
             postData =  {   id: post.id,
                 title: post.title,
                 content: post.content,
-                imagePath: post.imagePath
+                imagePath: post.imagePath,
+                creator: null
             }
         } else if (typeof(imageFile)=== 'object'){
             postData = new FormData();
