@@ -61,9 +61,7 @@ router.put('/api/posts/:id',checkAuth,  multer({storage}).single('image'),  (req
         imagePath: imageUrl,
         creator: req.userData.userId
     });
-    console.log(post);
     Post.updateOne({_id: req.params.id}, post).then( result => {
-        //console.log(result);
         res.status(200).json({message: 'Post updated successfully'});
     });
 });
