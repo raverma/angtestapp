@@ -48,7 +48,6 @@ export class AuthService {
                     this.router.navigate(["/"]);
                 }
             }, error => {
-                console.log(error);
                 this.authStatusListener.next(false);
             });
 
