@@ -24,7 +24,11 @@ export class AuthService {
     createUser(fName: string, lName: string, email: string, pwd: string){
         const authData: AuthData = { firstName: fName, lastName: lName, email: email,password: pwd };
         this.http.post("http://localhost:3000/api/user/signup", authData)
-            .subscribe();
+            .subscribe(response => {
+                this.router.navigate(["/"]);
+            }, error => {
+                console.log(error);
+            });
     }
 
     loginUser(email: string, password: string){
@@ -43,6 +47,9 @@ export class AuthService {
                     this.saveAuthData(this.token, this.loggedUserId, expirationDate);
                     this.router.navigate(["/"]);
                 }
+            }, error => {
+                console.log(error);
+                this.authStatusListener.next(false);
             });
 
     }
